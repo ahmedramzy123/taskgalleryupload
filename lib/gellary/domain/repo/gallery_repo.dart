@@ -9,5 +9,5 @@ abstract class GalleryRepo
 
 abstract class UploadRepo
 {
-  Future<GalleryUpload> uploadRepo(File file);
+  Future<GalleryUpload> uploadRepo(String file);
 }

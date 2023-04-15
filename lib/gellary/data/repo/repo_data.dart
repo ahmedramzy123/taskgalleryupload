@@ -23,7 +23,7 @@ class GalleryRepoImplUpload implements UploadRepo{
   GalleryRepoImplUpload(this.baseRemoteDataSourceUpload);
 
   @override
-  Future<GalleryUpload> uploadRepo(File file) async{
+  Future<GalleryUpload> uploadRepo(String file) async{
    return await baseRemoteDataSourceUpload.uploadDataSource(file);
   }
 }

@@ -23,15 +23,15 @@ class RemoteDataSourceGallery implements BaseRemoteDataSourceGallery
 
 abstract class BaseRemoteDataSourceUpload
 {
-  Future<GalleryModelUpload> uploadDataSource(File file);
+  Future<GalleryModelUpload> uploadDataSource(String file);
 }
 class RemoteDataSourceUpload implements BaseRemoteDataSourceUpload{
+
   @override
-  Future<GalleryModelUpload> uploadDataSource(File file)async {
-   var image =await DioHelper.postData(endPoint: "upload", data:
-   {
-     "img": file.path
-   });
+  Future<GalleryModelUpload> uploadDataSource(String file)async {
+    FormData formData = FormData.fromMap(
+        {'img':await MultipartFile.fromFile(file,filename: "image.png")});
+    var image =await DioHelper.uploadFile(endPoint: "upload", data:formData);
    print(image.statusCode);
    return GalleryModelUpload.fromJson(image.data);
   }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ListViewGallery extends StatelessWidget {
@@ -16,8 +17,12 @@ class ListViewGallery extends StatelessWidget {
         decoration: BoxDecoration(
             image:  DecorationImage(
                 fit: BoxFit.cover,
-                image: NetworkImage(
-                    image)),
+                image:CachedNetworkImageProvider(
+                  image,
+                ) ,
+                // image: NetworkImage(
+                   //  image)
+        ),
             borderRadius: BorderRadius.circular(20)),
       ),
     );

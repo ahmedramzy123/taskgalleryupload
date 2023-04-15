@@ -5,12 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:taskpromina/Auth/presentation/screen/login_screen.dart';
 import 'package:taskpromina/core/services/services_locator.dart';
 import 'package:taskpromina/core/utiles/apiserveice/diohelper.dart';
+import 'package:taskpromina/core/utiles/sharedprefrences.dart';
 
 import 'Auth/presentation/controller/cubit/auth_cubit/auth_cubit.dart';
 import 'gellary/presentation/screen/gallary_screen.dart';
 
 void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
   ServicesLocator().init();
+  AppPreferences.init();
   DioHelper.init();
   runApp(const MyApp());
 }
@@ -23,7 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context)=>AppCubit(getIt(),getIt())..getMyGallery()
+        BlocProvider(create: (context)=>AppCubit(getIt(),getIt())
         )
       ],
       child: MaterialApp(
@@ -37,7 +40,13 @@ class MyApp extends StatelessWidget {
         home:   LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints ) {
               print(constraints.minWidth.toInt());
-              return LoginScreen();
+
+              if(AppPreferences.getString(AppPreferences.TOKEN) == null)
+              {
+                print(AppPreferences.getString(AppPreferences.TOKEN));
+                return LoginScreen();
+              }
+              return const GalleryScreen();
             },
         )
       ),

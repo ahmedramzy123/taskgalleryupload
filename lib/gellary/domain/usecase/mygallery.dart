@@ -22,7 +22,7 @@ class Upload
 
   Upload(this.repo);
  Future<GalleryUpload> executeUpload(
-     File file
+     String file
      )async
   {
    return await repo.uploadRepo(file);

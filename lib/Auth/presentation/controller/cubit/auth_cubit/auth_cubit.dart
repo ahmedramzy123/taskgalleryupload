@@ -3,10 +3,13 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taskpromina/Auth/domain/usecase/login.dart';
 import 'package:taskpromina/Auth/presentation/controller/cubit/auth_cubit/auth_state.dart';
+import 'package:taskpromina/core/services/services_locator.dart';
 import 'package:taskpromina/core/utiles/apiserveice/diohelper.dart';
+import 'package:taskpromina/core/utiles/sharedprefrences.dart';
 import 'package:taskpromina/gellary/data/datasource/remote_data_source_gallery.dart';
 import 'package:taskpromina/gellary/data/repo/repo_data.dart';
 import 'package:taskpromina/gellary/domain/repo/gallery_repo.dart';
@@ -28,11 +31,11 @@ var user;
       await login.execute(email, password).then((value)
      {
        user =value ;
+       AppPreferences.saveString(value.token, AppPreferences.TOKEN);
+       AppPreferences.saveString(value.name, AppPreferences.NAME);
        emit(SuccessAuthLogin(value.name));
 
-       print(user.id);
      });
-     print(user.name);
 
   }
 List<String> list=[];
@@ -43,32 +46,42 @@ List<String> list=[];
    {
      list=value.image;
      print(list);
-     emit(SuccessGetMyGallery());
+   });
+    Future<void> .delayed(const Duration(milliseconds: 50)) ;
+    emit(SuccessGetMyGallery());
+
+  }
+  void uploadImage({required String file})async
+  {
+   var result = await Upload(getIt()).executeUpload(file).then((value)
+   {
+     getMyGallery();
 
    });
-  }
-  void uploadImage({required File file})async
-  {BaseRemoteDataSourceUpload baseRemoteDataSourceUpload =RemoteDataSourceUpload();
-    UploadRepo repo = GalleryRepoImplUpload(baseRemoteDataSourceUpload);
-   var result = await Upload(repo).executeUpload(file);
+   emit(UploadImageSuccess());
    print(result.message);
   }
-  File? imageFromGallery;
   void openGallery()async
   {
-    ImagePicker x =ImagePicker();
-    dynamic y = await x.pickImage(source: ImageSource.gallery);
-    imageFromGallery = File(y.path);
+    ImagePicker picker =ImagePicker();
+     await picker.pickImage(source: ImageSource.gallery).then((value)
+    {
+      uploadImage(file: value!.path);
+
+    });
+
+
   }
-  File? imageFromCamera;
   void openCamera()async
   {
-    ImagePicker x =ImagePicker();
-    dynamic y = await x.pickImage(source: ImageSource.camera);
-    print(y);
-    imageFromCamera = File(y.path);
-    uploadImage(file: imageFromCamera!);
-    print(imageFromCamera.toString());
+    ImagePicker picker =ImagePicker();
+     await picker.pickImage(source: ImageSource.camera).then((value)
+    {
+      uploadImage(file: value!.path);
+    });
+
+
+
   }
 
 }
